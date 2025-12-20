@@ -51,6 +51,20 @@ testpage.setLayout(testlayout)
 stack.addWidget(testpage)
 
 #Widgets
+#sidebar:
+sidebar = pysdw.QWidget()
+sidebar.setStyleSheet("""
+QWidget {
+    background-color: #1e1e1e;
+}
+""")
+sidebarlayout = pysdw.QVBoxLayout()
+sidebar.setFixedWidth(140)
+sidebar.setSizePolicy(
+    pysdw.QSizePolicy.Fixed,
+    pysdw.QSizePolicy.Expanding
+)
+
 #titlelabel:
 hometitle = pysdw.QLabel("Welcom to stockDuck!")
 hometitle.setAlignment(Qt.AlignHCenter)
@@ -59,20 +73,24 @@ homelayout.addWidget(hometitle)
 
 homebutton = pysdw.QPushButton("home")
 homebutton.clicked.connect(lambda: stack.setCurrentWidget(homepage))
-testlayout.addWidget(homebutton)
+sidebarlayout.addWidget(homebutton)
 
+
+#testpage:
 testitle = pysdw.QLabel("Wtest")
 testlayout.addWidget(testitle)
-
 testbutton = pysdw.QPushButton("test")
 testbutton.clicked.connect(lambda: stack.setCurrentWidget(testpage))
-homelayout.addWidget(testbutton)
+sidebarlayout.addWidget(testbutton)
 
 #Layouts
-main_layout = pysdw.QVBoxLayout()      
+main_layout = pysdw.QHBoxLayout()  
+sidebarlayout.addStretch(2)
+sidebar.setLayout(sidebarlayout)    
 
-main_layout.addWidget(stack)
 stack.setCurrentWidget(homepage)
+main_layout.addWidget(sidebar)
+main_layout.addWidget(stack)
 
 window.setLayout(main_layout)
 window.resize(400, 200)
