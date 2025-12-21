@@ -59,11 +59,6 @@ QWidget {
 }
 """)
 sidebarlayout = pysdw.QVBoxLayout()
-sidebar.setFixedWidth(140)
-sidebar.setSizePolicy(
-    pysdw.QSizePolicy.Fixed,
-    pysdw.QSizePolicy.Expanding
-)
 
 #titlelabel:
 hometitle = pysdw.QLabel("Welcom to stockDuck!")
@@ -71,8 +66,19 @@ hometitle.setAlignment(Qt.AlignHCenter)
 hometitle.setFont(titlefont)
 homelayout.addWidget(hometitle)
 
-homebutton = pysdw.QPushButton("home")
+homebutton = pysdw.QPushButton()
+homebutton.setIcon(QPixmap("images/home_icon.png"))
 homebutton.clicked.connect(lambda: stack.setCurrentWidget(homepage))
+homebutton.setFlat(True) 
+homebutton.setToolTip("Home")
+homebutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
 sidebarlayout.addWidget(homebutton)
 
 
@@ -89,8 +95,8 @@ sidebarlayout.addStretch(2)
 sidebar.setLayout(sidebarlayout)    
 
 stack.setCurrentWidget(homepage)
-main_layout.addWidget(sidebar)
-main_layout.addWidget(stack)
+main_layout.addWidget(sidebar,1)
+main_layout.addWidget(stack,9)
 
 window.setLayout(main_layout)
 window.resize(400, 200)
