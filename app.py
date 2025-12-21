@@ -3,7 +3,32 @@ import PySide6.QtWidgets as pysdw
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtCore import QUrl
+from PySide6.QtWidgets import QSizePolicy
 
+class StockLink():
+  def __init__(self):
+    stock_link = pysdw.QPushButton("NVDA")
+    stock_link.clicked.connect(
+        lambda: QDesktopServices.openUrl(QUrl("https://de.finance.yahoo.com/chart/NVDA"))
+    )
+    stock_link.setStyleSheet("""
+    QPushButton {
+        background: transparent;
+        color: #ffffff;
+        text-align: left;
+        border: None                     
+    }
+    QPushButton:hover {
+        text-decoration: underline;
+    }
+    """)
+    stock_link.setSizePolicy(
+        QSizePolicy.Maximum,
+        QSizePolicy.Fixed
+    )
+    
 #fonts:
 titlefont = QFont()
 titlefont.setFamily("Bauhaus 93")
@@ -45,10 +70,10 @@ homelayout = pysdw.QVBoxLayout()
 homepage.setLayout(homelayout)
 stack.addWidget(homepage)
 
-testpage = pysdw.QWidget()
-testlayout = pysdw.QVBoxLayout()
-testpage.setLayout(testlayout)
-stack.addWidget(testpage)
+tradingpage = pysdw.QWidget()
+tradinglayout = pysdw.QVBoxLayout()
+tradingpage.setLayout(tradinglayout)
+stack.addWidget(tradingpage)
 
 #Widgets
 #sidebar:
@@ -82,12 +107,24 @@ QToolTip {
 sidebarlayout.addWidget(homebutton)
 
 
-#testpage:
-testitle = pysdw.QLabel("Wtest")
-testlayout.addWidget(testitle)
-testbutton = pysdw.QPushButton("test")
-testbutton.clicked.connect(lambda: stack.setCurrentWidget(testpage))
-sidebarlayout.addWidget(testbutton)
+#tradingpage:
+tradinglayout.addWidget(stock_link)
+
+#sidebar button
+tradingbutton = pysdw.QPushButton("")
+tradingbutton.setIcon(QPixmap("images/trading_icon.webp"))
+tradingbutton.clicked.connect(lambda: stack.setCurrentWidget(tradingpage))
+tradingbutton.setFlat(True)
+tradingbutton.setToolTip("Trading page")
+tradingbutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
+sidebarlayout.addWidget(tradingbutton)
 
 #Layouts
 main_layout = pysdw.QHBoxLayout()  
