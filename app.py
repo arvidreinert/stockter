@@ -8,10 +8,10 @@ from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import QSizePolicy
 
 class StockLink():
-  def __init__(self):
-    stock_link = pysdw.QPushButton("NVDA")
+  def __init__(self,stockname="NVDA",linkname="NVDA chart"):
+    stock_link = pysdw.QPushButton(linkname)
     stock_link.clicked.connect(
-        lambda: QDesktopServices.openUrl(QUrl("https://de.finance.yahoo.com/chart/NVDA"))
+        lambda: QDesktopServices.openUrl(QUrl(f"https://de.finance.yahoo.com/chart/{stockname}"))
     )
     stock_link.setStyleSheet("""
     QPushButton {
@@ -28,7 +28,8 @@ class StockLink():
         QSizePolicy.Maximum,
         QSizePolicy.Fixed
     )
-    
+    self.stocklink = stock_link
+
 #fonts:
 titlefont = QFont()
 titlefont.setFamily("Bauhaus 93")
@@ -108,7 +109,46 @@ sidebarlayout.addWidget(homebutton)
 
 
 #tradingpage:
-tradinglayout.addWidget(stock_link)
+searchbar = pysdw.QLineEdit()
+searchbar.setStyleSheet("""
+QWidget {
+    background-color: #ffd429;
+    color: #000000;
+}""")
+searchbar.setPlaceholderText("Search stock Symbols here.")
+searchbar.setMinimumWidth(200)
+tradinglayout.addWidget(searchbar,alignment=Qt.AlignRight | Qt.AlignTop)
+
+#the searchbar:
+searcharea = pysdw.QWidget()
+searcharea.setStyleSheet("""
+QWidget {
+    background-color: #1e1e1e;
+}
+""")
+searchresults = pysdw.QVBoxLayout()
+searcharea.setLayout(searchresults)
+
+scrollarea = pysdw.QScrollArea()
+scrollarea.setStyleSheet("""
+QWidget {
+    border: None;
+}
+""")
+scrollarea.setWidgetResizable(True)
+scrollarea.setWidget(searcharea)
+scrollarea.setSizePolicy(
+    pysdw.QSizePolicy.Expanding,
+    pysdw.QSizePolicy.Expanding
+)
+scrollarea.setMinimumHeight(200)
+tradinglayout.addWidget(scrollarea,1)
+tradinglayout.addStretch(0)
+
+def on_search_trading_layout0():
+  text = searchbar.text()
+  searchresults.addWidget(StockLink(text,f"view {text} chart (extern)").stocklink,alignment=Qt.AlignLeft | Qt.AlignTop)
+searchbar.returnPressed.connect(on_search_trading_layout0)
 
 #sidebar button
 tradingbutton = pysdw.QPushButton("")
