@@ -109,6 +109,7 @@ sidebarlayout.addWidget(homebutton)
 
 
 #tradingpage:
+topbar = pysdw.QHBoxLayout() 
 searchbar = pysdw.QLineEdit()
 searchbar.setStyleSheet("""
 QWidget {
@@ -117,7 +118,8 @@ QWidget {
 }""")
 searchbar.setPlaceholderText("Search stock Symbols here.")
 searchbar.setMinimumWidth(200)
-tradinglayout.addWidget(searchbar,alignment=Qt.AlignRight | Qt.AlignTop)
+topbar.addWidget(searchbar)
+tradinglayout.addLayout(topbar)
 
 #the searchbar:
 searcharea = pysdw.QWidget()
@@ -149,6 +151,37 @@ def on_search_trading_layout0():
   text = searchbar.text()
   searchresults.addWidget(StockLink(text,f"view {text} chart (extern)").stocklink,alignment=Qt.AlignLeft | Qt.AlignTop)
 searchbar.returnPressed.connect(on_search_trading_layout0)
+
+#deletebutton
+#delet search history button:
+def clear_scrollarea(layout):
+    while layout.count():
+        item = layout.takeAt(0)
+        widget = item.widget()
+        print(widget)
+        if scrollarea == widget:
+            widget.setParent(None)
+            widget.deleteLater()
+
+deletbutton = pysdw.QPushButton()
+deletbutton.setIcon(QPixmap("images/delete_icon.png"))
+deletbutton.setToolTip("Delete search history")
+deletbutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
+topbar.addWidget(deletbutton)
+
+def on_delete():
+   global searchresults
+   clear_scrollarea(searchresults)
+   scrollarea.update() 
+   searcharea.update()
+deletbutton.clicked.connect(on_delete)
 
 #sidebar button
 tradingbutton = pysdw.QPushButton("")
