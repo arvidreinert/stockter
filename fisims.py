@@ -65,7 +65,7 @@ class sim():
         dlay = (1-dlay)*amount
         sleep(dlay)
         pri = float(self.chunk.up_to_date_price(symbol))
-        while pri == 0:
+        while pri == -1:
             sleep(5)
             pri = float(self.chunk.up_to_date_price(symbol))
         self.stocks[symbol]["orders"].append({"amount":amount,"kind":kind,"pwb":pri})
@@ -98,7 +98,7 @@ class sim():
                 kind = -1
             sleep(dlay)
             pri = float(self.chunk.up_to_date_price(symbol))
-            while pri == 0:
+            while pri == -1:
                 sleep(5)
                 pri = float(self.chunk.up_to_date_price(symbol))
             self.stocks[symbol]["amount"] -= amount

@@ -57,7 +57,7 @@ class data_chunk():
         try:
             current_price = ticker.history(period="1d")['Close'].iloc[-1]
         except:
-            current_price = 0
+            current_price = -1
         return current_price
 
     def __get_dividends(self,ticker_symbol):

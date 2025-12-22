@@ -1,4 +1,6 @@
 import sys
+from fisims import *
+import read_data as rd
 import PySide6.QtWidgets as pysdw
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
@@ -6,6 +8,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QApplication
 
 class StockLink():
   def __init__(self,stockname="NVDA",linkname="NVDA chart"):
@@ -29,6 +32,9 @@ class StockLink():
         QSizePolicy.Fixed
     )
     self.stocklink = stock_link
+
+#the stcok data part:
+chunk = rd.data_chunk()
 
 #fonts:
 titlefont = QFont()
@@ -146,26 +152,45 @@ scrollarea.setSizePolicy(
 scrollarea.setMinimumHeight(200)
 tradinglayout.addWidget(scrollarea,1)
 tradinglayout.addStretch(0)
+#the stock design:
+stocknamelabel = pysdw.QLabel("")
+stocknamelabel.setFont(mainfont)
+stocknamelabel.setAlignment(Qt.AlignTop)
+searchresults.addWidget(stocknamelabel)
+pricelabel = pysdw.QLabel("")
+searchresults.addWidget(pricelabel)
+resultlabel = StockLink("","").stocklink
+searchresults.addWidget(resultlabel,alignment=Qt.AlignLeft | Qt.AlignTop)
+loadingstock = pysdw.QLabel("")
+loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
+topbar.addWidget(loadingstock)
 
 def on_search_trading_layout0():
-  text = searchbar.text()
-  searchresults.addWidget(StockLink(text,f"view {text} chart (extern)").stocklink,alignment=Qt.AlignLeft | Qt.AlignTop)
+  loadingstock.setPixmap(QPixmap("images/loading_icon.png").scaled(32,32))
+  QApplication.processEvents()
+  text = searchbar.text().strip()
+  if not text:
+    return
+  resultlabel.setText(f"view {text} chart (extern)")
+  resultlabel.clicked.connect(
+        lambda: QDesktopServices.openUrl(QUrl(f"https://de.finance.yahoo.com/chart/{text}"))
+    )
+  stocknamelabel.setText(searchbar.text()+":"+f" ({datetime.now().strftime("%Y_%m_%d %H:%M:%S")})")
+  pri = chunk.up_to_date_price(searchbar.text())
+  if pri != -1:
+    pricelabel.setText(f"{pri} $")
+  else:
+    pricelabel.setText("Stock/Symbol could not be found")
+    stocknamelabel.setText("")
+    resultlabel.setText("")
+  loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
 searchbar.returnPressed.connect(on_search_trading_layout0)
 
 #deletebutton
 #delet search history button:
-def clear_scrollarea(layout):
-    while layout.count():
-        item = layout.takeAt(0)
-        widget = item.widget()
-        print(widget)
-        if scrollarea == widget:
-            widget.setParent(None)
-            widget.deleteLater()
-
 deletbutton = pysdw.QPushButton()
 deletbutton.setIcon(QPixmap("images/delete_icon.png"))
-deletbutton.setToolTip("Delete search history")
+deletbutton.setToolTip("Delete search-bar content")
 deletbutton.setStyleSheet("""
 QToolTip {
     background-color: #2a2a2a;
@@ -177,10 +202,7 @@ QToolTip {
 topbar.addWidget(deletbutton)
 
 def on_delete():
-   global searchresults
-   clear_scrollarea(searchresults)
-   scrollarea.update() 
-   searcharea.update()
+   searchbar.setText("")
 deletbutton.clicked.connect(on_delete)
 
 #sidebar button
