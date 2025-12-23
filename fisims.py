@@ -5,7 +5,7 @@ from time import sleep
 from random import uniform
 import ast
 
-class sim():
+class Sim():
     def __init__(self,cash):
         self.chunk = rd.data_chunk()
         self.stocks = {}

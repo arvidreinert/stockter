@@ -9,6 +9,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QTime,QTimer
 
 class StockLink():
   def __init__(self,stockname="NVDA",linkname="NVDA chart"):
@@ -35,6 +36,7 @@ class StockLink():
 
 #the stcok data part:
 chunk = rd.data_chunk()
+sim = Sim(0)
 
 #fonts:
 titlefont = QFont()
@@ -97,6 +99,23 @@ hometitle = pysdw.QLabel("Welcom to stockDuck!")
 hometitle.setAlignment(Qt.AlignHCenter)
 hometitle.setFont(titlefont)
 homelayout.addWidget(hometitle)
+moneybar = pysdw.QLineEdit()
+moneybar.setStyleSheet("""
+QWidget {
+    background-color: #ffd429;
+    color: #000000;
+}""")
+moneybar.setPlaceholderText("Please only digits!")
+moneybar.setMinimumWidth(200)
+def enter_money():
+  sim.cash += moneybar.text()
+  informationlabelhomepage.setText(f"You currently have {sim.cash} $ (in-game, not exchangable)\n To get more money you can enter any amount into the text-field.\n To take away money, enter a negative amount.")
+moneybar.returnPressed.connect(enter_money)
+homelayout.addWidget(moneybar,alignment=Qt.AlignRight)
+informationlabelhomepage = pysdw.QLabel(f"You currently have {sim.cash} $ (in-game, not exchangable)\n To get more money you can enter any amount into the text-field.\n To take away money, enter a negative amount.")
+informationlabelhomepage.setFont(mainfont)
+informationlabelhomepage.setStyleSheet("color: #ffffff;")
+homelayout.addWidget(informationlabelhomepage)
 
 homebutton = pysdw.QPushButton()
 homebutton.setIcon(QPixmap("images/home_icon.png"))
@@ -220,6 +239,29 @@ QToolTip {
 }
 """)
 sidebarlayout.addWidget(tradingbutton)
+
+#sidebar clock:
+clockfont = QFont()
+mainfont.setFamily("Bauhaus 93")
+mainfont.setPointSize(15)
+mainfont.setBold(True)
+mainfont.setItalic(False)
+clocklabel = pysdw.QLabel("")
+clocklabel.setFont(clockfont)
+def update_time():
+    if ":" in clocklabel.text():
+        clocklabel.setText(QTime.currentTime().toString("HH|m|ss"))
+    else:
+       clocklabel.setText(QTime.currentTime().toString("HH:mm:ss"))
+timer = QTimer()
+timer.timeout.connect(update_time)
+fm = clocklabel.fontMetrics()
+clocklabel.setFixedWidth(fm.horizontalAdvance("88:88:88"))
+timer.start(500)
+#update every 500 ms for a smooth blinking of the ":"
+update_time() 
+sidebarlayout.addStretch(9)
+sidebarlayout.addWidget(clocklabel,alignment=Qt.AlignHCenter)
 
 #Layouts
 main_layout = pysdw.QHBoxLayout()  
