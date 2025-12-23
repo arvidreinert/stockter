@@ -87,8 +87,9 @@ stack.addWidget(tradingpage)
 #Widgets
 #sidebar:
 sidebar = pysdw.QWidget()
+sidebar.setObjectName("sidebar")
 sidebar.setStyleSheet("""
-QWidget {
+#sidebar {
     background-color: #1e1e1e;
 }
 """)
@@ -100,8 +101,9 @@ hometitle.setAlignment(Qt.AlignHCenter)
 hometitle.setFont(titlefont)
 homelayout.addWidget(hometitle)
 moneybar = pysdw.QLineEdit()
+moneybar.setObjectName("moneybarhomepage")
 moneybar.setStyleSheet("""
-QWidget {
+#moneybarhomepage {
     background-color: #ffd429;
     color: #000000;
 }""")
@@ -114,6 +116,7 @@ moneybar.returnPressed.connect(enter_money)
 homelayout.addWidget(moneybar,alignment=Qt.AlignRight)
 informationlabelhomepage = pysdw.QLabel(f"You currently have {sim.cash} $ (in-game, not exchangable)\n To get more money you can enter any amount into the text-field.\n To take away money, enter a negative amount.")
 informationlabelhomepage.setFont(mainfont)
+informationlabelhomepage.setObjectName("informationlabelhomepage")
 informationlabelhomepage.setStyleSheet("color: #ffffff;")
 homelayout.addWidget(informationlabelhomepage)
 
@@ -122,14 +125,6 @@ homebutton.setIcon(QPixmap("images/home_icon.png"))
 homebutton.clicked.connect(lambda: stack.setCurrentWidget(homepage))
 homebutton.setFlat(True) 
 homebutton.setToolTip("Home")
-homebutton.setStyleSheet("""
-QToolTip {
-    background-color: #2a2a2a;
-    color: white;
-    border: 1px solid #444;
-    padding: 4px;
-}
-""")
 sidebarlayout.addWidget(homebutton)
 
 
@@ -184,19 +179,27 @@ loadingstock = pysdw.QLabel("")
 loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
 topbar.addWidget(loadingstock)
 stockbuyselllayout = pysdw.QHBoxLayout()
-searchresults.addLayout(stockbuyselllayout)
+stockbuysellwidgetplaceholder = pysdw.QWidget()
+stockbuysellwidgetplaceholder.setObjectName("stockBuySell")
+stockbuysellwidgetplaceholder.setStyleSheet("""
+#stockBuySell {
+    background-color: #121212;
+    border-radius: 12px;
+}
+""")
+stockbuysellwidgetplaceholder.setLayout(stockbuyselllayout)
+searchresults.addWidget(stockbuysellwidgetplaceholder)
 buystockbutton = pysdw.QPushButton("Buy")
 buystockbutton.setStyleSheet("""
-QToolTip {
-    background-color: #2a2a2a;
+QWidget {
+    background-color: #21D12D;
     color: white;
-    border: 1px solid #444;
     padding: 4px;
 }
 """)
 buystockbutton.setToolTip("Buy a stock")
 amountspin = pysdw.QSpinBox()
-amountspin.setRange(1, 5)
+amountspin.setRange(1, 1)
 # Min / Max
 amountspin.setValue(1)
 amountspin.setSuffix(" stocks")
@@ -204,10 +207,9 @@ stockbuyselllayout.addWidget(buystockbutton)
 stockbuyselllayout.addWidget(amountspin)
 sellstockbutton = pysdw.QPushButton("Sell")
 sellstockbutton.setStyleSheet("""
-QToolTip {
-    background-color: #2a2a2a;
+QWidget {
+    background-color: #D10A0A;
     color: white;
-    border: 1px solid #444;
     padding: 4px;
 }
 """)
@@ -217,6 +219,9 @@ amountspin1.setRange(1, 5)
 # Min / Max
 amountspin1.setValue(1)
 amountspin1.setSuffix(" stocks")
+ordertype = pysdw.QComboBox()
+ordertype.addItems(["Long", "Short"])
+stockbuyselllayout.addWidget(ordertype)
 stockbuyselllayout.addWidget(amountspin1)
 stockbuyselllayout.addWidget(sellstockbutton)
 
@@ -292,6 +297,12 @@ mainfont.setPointSize(15)
 mainfont.setBold(True)
 mainfont.setItalic(False)
 clocklabel = pysdw.QLabel("")
+clocklabel.setStyleSheet("""
+QWidget {
+    background-color: #1e1e1e;
+}
+"""
+)
 clocklabel.setFont(clockfont)
 def update_time():
     if ":" in clocklabel.text():
