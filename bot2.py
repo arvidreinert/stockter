@@ -1,6 +1,6 @@
 import read_data as rd
 import create_data as fd
-from fisims import sim
+from fisims import Sim
 import time
 
 class intraday_bot():

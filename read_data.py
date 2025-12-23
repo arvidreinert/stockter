@@ -35,6 +35,7 @@ class data_chunk():
     def max_volume(self,symbol):
         h = create_data.fast_tabel(symbol)
         h = h["Volume"]
+
         return max(h),h.iloc[-1]
     
     def get_data(self,symbol,statistic):

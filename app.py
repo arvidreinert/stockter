@@ -202,7 +202,7 @@ amountspin = pysdw.QSpinBox()
 amountspin.setRange(1, 1)
 # Min / Max
 amountspin.setValue(1)
-amountspin.setSuffix(" stocks")
+amountspin.setSuffix(" stock(s)")
 stockbuyselllayout.addWidget(buystockbutton)
 stockbuyselllayout.addWidget(amountspin)
 sellstockbutton = pysdw.QPushButton("Sell")
@@ -218,7 +218,7 @@ amountspin1 = pysdw.QSpinBox()
 amountspin1.setRange(1, 5)
 # Min / Max
 amountspin1.setValue(1)
-amountspin1.setSuffix(" stocks")
+amountspin1.setSuffix(" stock(s)")
 ordertype = pysdw.QComboBox()
 ordertype.addItems(["Long", "Short"])
 stockbuyselllayout.addWidget(ordertype)
@@ -239,7 +239,7 @@ def on_search_trading_layout0():
   pri = chunk.up_to_date_price(searchbar.text())
   amountspin.setRange(1, int(sim.cash/pri))
   try:
-    amountspin1.setRange(1, int(sim.stocks[text]["amount"]))
+    amountspin1.setRange(1, int(sim.stocks[text][ordertype.currentText().lower()]))
   except KeyError:
      amountspin1.setRange(0, 0)
   if pri != -1:
@@ -251,10 +251,18 @@ def on_search_trading_layout0():
   loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
 searchbar.returnPressed.connect(on_search_trading_layout0)
 
+def on_sell():
+   sim.sell_order(stocknamelabel.text(),int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
+def on_buy():
+   sim.buy_order(stocknamelabel.text(),int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
+sellstockbutton.clicked.connect(on_sell)
+buystockbutton.clicked.connect(on_buy)
+
+
 #automatically updating the stock price
 stockupdatetimer = QTimer()
 stockupdatetimer.timeout.connect(on_search_trading_layout0)
-stockupdatetimer.start(5000)
+stockupdatetimer.start(10000)
 
 #deletebutton
 deletbutton = pysdw.QPushButton()

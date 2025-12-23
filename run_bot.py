@@ -4,7 +4,7 @@ import traceback
 
 symbols = ["SOL-USD","USDT-USD","DOGE-USD"]
 bot = intraday_bot(symbols)
-simulator = sim(10)
+simulator = Sim(10)
 counter = 0
 start_time = time.perf_counter()
 try:

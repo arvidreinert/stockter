@@ -125,6 +125,7 @@ class Sim():
 
     def execute_bot(self,amount,symbol,order_type="hold",kind="long"):
         if order_type == "buy":
+            print(symbol,amount,kind)
             return self.buy_order(symbol,amount,kind)
         if order_type == "sell":
             return self.sell_order(symbol,amount,kind)
