@@ -108,7 +108,7 @@ QWidget {
 moneybar.setPlaceholderText("Please only digits!")
 moneybar.setMinimumWidth(200)
 def enter_money():
-  sim.cash += moneybar.text()
+  sim.cash += int(moneybar.text())
   informationlabelhomepage.setText(f"You currently have {sim.cash} $ (in-game, not exchangable)\n To get more money you can enter any amount into the text-field.\n To take away money, enter a negative amount.")
 moneybar.returnPressed.connect(enter_money)
 homelayout.addWidget(moneybar,alignment=Qt.AlignRight)
@@ -183,6 +183,42 @@ searchresults.addWidget(resultlabel,alignment=Qt.AlignLeft | Qt.AlignTop)
 loadingstock = pysdw.QLabel("")
 loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
 topbar.addWidget(loadingstock)
+stockbuyselllayout = pysdw.QHBoxLayout()
+searchresults.addLayout(stockbuyselllayout)
+buystockbutton = pysdw.QPushButton("Buy")
+buystockbutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
+buystockbutton.setToolTip("Buy a stock")
+amountspin = pysdw.QSpinBox()
+amountspin.setRange(1, 5)
+# Min / Max
+amountspin.setValue(1)
+amountspin.setSuffix(" stocks")
+stockbuyselllayout.addWidget(buystockbutton)
+stockbuyselllayout.addWidget(amountspin)
+sellstockbutton = pysdw.QPushButton("Sell")
+sellstockbutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
+sellstockbutton.setToolTip("Sell a stock")
+amountspin1 = pysdw.QSpinBox()
+amountspin1.setRange(1, 5)
+# Min / Max
+amountspin1.setValue(1)
+amountspin1.setSuffix(" stocks")
+stockbuyselllayout.addWidget(amountspin1)
+stockbuyselllayout.addWidget(sellstockbutton)
 
 def on_search_trading_layout0():
   loadingstock.setPixmap(QPixmap("images/loading_icon.png").scaled(32,32))
@@ -196,6 +232,11 @@ def on_search_trading_layout0():
     )
   stocknamelabel.setText(searchbar.text()+":"+f" ({datetime.now().strftime("%Y_%m_%d %H:%M:%S")})")
   pri = chunk.up_to_date_price(searchbar.text())
+  amountspin.setRange(1, int(sim.cash/pri))
+  try:
+    amountspin1.setRange(1, int(sim.stocks[text]["amount"]))
+  except KeyError:
+     amountspin1.setRange(0, 0)
   if pri != -1:
     pricelabel.setText(f"{pri} $")
   else:
@@ -205,8 +246,12 @@ def on_search_trading_layout0():
   loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
 searchbar.returnPressed.connect(on_search_trading_layout0)
 
+#automatically updating the stock price
+stockupdatetimer = QTimer()
+stockupdatetimer.timeout.connect(on_search_trading_layout0)
+stockupdatetimer.start(5000)
+
 #deletebutton
-#delet search history button:
 deletbutton = pysdw.QPushButton()
 deletbutton.setIcon(QPixmap("images/delete_icon.png"))
 deletbutton.setToolTip("Delete search-bar content")
