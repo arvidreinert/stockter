@@ -84,6 +84,11 @@ tradinglayout = pysdw.QVBoxLayout()
 tradingpage.setLayout(tradinglayout)
 stack.addWidget(tradingpage)
 
+walletpage = pysdw.QWidget()
+walletlayout = pysdw.QVBoxLayout()
+walletpage.setLayout(walletlayout)
+stack.addWidget(walletpage)
+
 #Widgets
 #sidebar:
 sidebar = pysdw.QWidget()
