@@ -75,8 +75,10 @@ class Sim():
         return symbol+" buy order completed with "+str(dlay)+" seconds of delay; price: "+str(pri)
     
     def sell_order(self,symbol,amount,kind="long"):
+        #USDT-USD 1 long
+        print(symbol,amount,kind)
         max_v,current_c = self.chunk.max_volume(symbol)
-        while max_v == 0:
+        while max_v == -1:
             sleep(5)
             max_v,current_c = self.chunk.max_volume(symbol)
         dlay = round(current_c/max_v,2)

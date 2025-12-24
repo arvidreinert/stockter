@@ -224,6 +224,15 @@ ordertype.addItems(["Long", "Short"])
 stockbuyselllayout.addWidget(ordertype)
 stockbuyselllayout.addWidget(amountspin1)
 stockbuyselllayout.addWidget(sellstockbutton)
+def on_curtextchanged():
+   text = searchbar.text().strip()
+   try:
+    amountspin1.setRange(0, int(sim.stocks[text][ordertype.currentText().lower()+"s"]))
+    amountspin1.setValue(amountspin.maximum())
+   except KeyError:
+    amountspin1.setRange(0, 0)
+   amountspin.setValue(amountspin.maximum())
+ordertype.currentTextChanged.connect(on_curtextchanged)
 
 def on_search_trading_layout0():
   loadingstock.setPixmap(QPixmap("images/loading_icon.png").scaled(32,32))
@@ -237,9 +246,11 @@ def on_search_trading_layout0():
     )
   stocknamelabel.setText(searchbar.text()+":"+f" ({datetime.now().strftime("%Y_%m_%d %H:%M:%S")})")
   pri = chunk.up_to_date_price(searchbar.text())
-  amountspin.setRange(1, int(sim.cash/pri))
+  amountspin.setRange(0, int(sim.cash/pri))
+  amountspin.setValue(amountspin.maximum())
   try:
-    amountspin1.setRange(1, int(sim.stocks[text][ordertype.currentText().lower()]))
+    amountspin1.setRange(1, int(sim.stocks[text][ordertype.currentText().lower()+"s"]))
+    amountspin1.setValue(amountspin.maximum())
   except KeyError:
      amountspin1.setRange(0, 0)
   if pri != -1:
@@ -252,9 +263,10 @@ def on_search_trading_layout0():
 searchbar.returnPressed.connect(on_search_trading_layout0)
 
 def on_sell():
-   sim.sell_order(stocknamelabel.text(),int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
+   sim.sell_order(stocknamelabel.text().split(":")[0],int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
 def on_buy():
-   sim.buy_order(stocknamelabel.text(),int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
+   sim.buy_order(stocknamelabel.text().split(":")[0],int(amountspin.text().replace(" stock(s)","")),ordertype.currentText().lower())
+   sim.portfolio()
 sellstockbutton.clicked.connect(on_sell)
 buystockbutton.clicked.connect(on_buy)
 
@@ -313,6 +325,7 @@ QWidget {
 )
 clocklabel.setFont(clockfont)
 def update_time():
+    informationlabelhomepage.setText(f"You currently have {sim.cash} $ (in-game, not exchangable)\n To get more money you can enter any amount into the text-field.\n To take away money, enter a negative amount.")
     if ":" in clocklabel.text():
         clocklabel.setText(QTime.currentTime().toString("HH|m|ss"))
     else:
