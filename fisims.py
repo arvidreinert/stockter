@@ -10,6 +10,7 @@ class Sim():
         self.chunk = rd.data_chunk()
         self.stocks = {}
         self.cash = cash
+        self.orders = {}
         self.last_login = ""
 
     def pay_dividends(self,filename):
@@ -29,8 +30,8 @@ class Sim():
         self.save_sim(filename)
 
     def portfolio(self):
-        print(f"Portfolio   {datetime.now().strftime("%Y_%m_%d %H:%M:%S")}")
-        print("cash:"+str(round(self.cash,3)))
+        st = f"Portfolio   {datetime.now().strftime("%Y_%m_%d %H:%M:%S")}\n"
+        st += "cash:"+str(round(self.cash,3))+"\n"
         for stock in self.stocks:
             base = f"\n{stock}  {self.stocks[stock]["amount"]}: longs: {self.stocks[stock]["longs"]}, shorts: {self.stocks[stock]["shorts"]} :"
             c = 1
@@ -43,7 +44,8 @@ class Sim():
                 gain = (self.chunk.up_to_date_price(stock)-order["pwb"])*order["amount"]*order["kind"]-v
                 base+=f"amount:{order["amount"]}, kind:{"long" if order["kind"] == 1 else "short" if order["kind"] == -1 else "sell"}, {"gain" if gain >= 0 else "loss"}:{gain}"
                 c += 1
-            print(base)
+            st += base+"\n"
+        return st
             
     def buy_order(self,symbol,amount,kind="long"):
         if not symbol in self.stocks:

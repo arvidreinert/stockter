@@ -298,6 +298,48 @@ def on_delete():
    searchbar.setText("")
 deletbutton.clicked.connect(on_delete)
 
+#wallet page:
+walletarea = pysdw.QWidget()
+walletarea.setStyleSheet("""
+QWidget {
+    background-color: #1e1e1e;
+}
+""")
+walletarealayout = pysdw.QVBoxLayout()
+walletarea.setLayout(walletarealayout)
+
+scrollareawp = pysdw.QScrollArea()
+scrollareawp.setStyleSheet("""
+QWidget {
+    border: None;
+}
+""")
+scrollareawp.setWidgetResizable(True)
+scrollareawp.setWidget(walletarea)
+scrollareawp.setSizePolicy(
+    pysdw.QSizePolicy.Expanding,
+    pysdw.QSizePolicy.Expanding
+)
+scrollareawp.setMinimumHeight(200)
+walletlayout.addWidget(scrollareawp,1)
+walletlayout.addStretch(0)
+
+walletfont = QFont()
+walletfont.setFamily("ADLaM Display")
+walletfont.setPointSize(15)
+walletfont.setBold(False)
+walletfont.setItalic(False)
+
+walletcontent = pysdw.QLabel("")
+walletcontent.setFont(walletfont)
+walletcontent.setStyleSheet(
+  """QWidget {
+    color: #FFFFFF
+  }"""
+)
+walletarealayout.addWidget(walletcontent)
+walletlayout.addStretch(0)
+
 #sidebar button
 tradingbutton = pysdw.QPushButton("")
 tradingbutton.setIcon(QPixmap("images/trading_icon.webp"))
@@ -314,9 +356,13 @@ QToolTip {
 """)
 sidebarlayout.addWidget(tradingbutton)
 
+def on_walletpage():
+  walletcontent.setText(sim.portfolio())
+  stack.setCurrentWidget(walletpage)
+
 walletbutton = pysdw.QPushButton("")
 walletbutton.setIcon(QPixmap("images/wallet_icon.png"))
-walletbutton.clicked.connect(lambda: stack.setCurrentWidget(walletpage))
+walletbutton.clicked.connect(on_walletpage)
 walletbutton.setFlat(True)
 walletbutton.setToolTip("Wallet page")
 tradingbutton.setStyleSheet("""
