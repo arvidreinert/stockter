@@ -271,7 +271,6 @@ def on_sell():
    sim.sell_order(stocknamelabel.text().split(":")[0],int(amountspin1.text().replace(" stock(s)","")),ordertype.currentText().lower())
 def on_buy():
    sim.buy_order(stocknamelabel.text().split(":")[0],int(amountspin.text().replace(" stock(s)","")),ordertype.currentText().lower())
-   sim.portfolio()
 sellstockbutton.clicked.connect(on_sell)
 buystockbutton.clicked.connect(on_buy)
 
@@ -314,6 +313,21 @@ QToolTip {
 }
 """)
 sidebarlayout.addWidget(tradingbutton)
+
+walletbutton = pysdw.QPushButton("")
+walletbutton.setIcon(QPixmap("images/wallet_icon.png"))
+walletbutton.clicked.connect(lambda: stack.setCurrentWidget(walletpage))
+walletbutton.setFlat(True)
+walletbutton.setToolTip("Wallet page")
+tradingbutton.setStyleSheet("""
+QToolTip {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 4px;
+}
+""")
+sidebarlayout.addWidget(walletbutton)
 
 #sidebar clock:
 clockfont = QFont()
