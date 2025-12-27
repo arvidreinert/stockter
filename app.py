@@ -10,6 +10,8 @@ from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTime,QTimer
+from PySide6.QtWidgets import QMainWindow
+import json
 
 class StockLink():
   def __init__(self,stockname="NVDA",linkname="NVDA chart"):
@@ -37,6 +39,24 @@ class StockLink():
 #the stcok data part:
 chunk = rd.data_chunk()
 sim = Sim(0)
+
+#loading saves
+try:
+    with open("save.json", encoding="utf-8") as f:
+        data = json.load(f)
+        sim.stocks = data["stocks"]
+        sim.cash = data["cash"]
+        sim.orders = data["orders"]
+
+except:
+   pass
+
+#save files on closing the sim:
+def save_files():
+   data = {"stocks":sim.stocks,"cash":sim.cash,"orders":sim.orders}
+   with open("save.json", "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=4)
+   print("Spielstand gespeichert")
 
 #fonts:
 titlefont = QFont()
@@ -252,10 +272,8 @@ def on_search_trading_layout0():
   stocknamelabel.setText(searchbar.text()+":"+f" ({datetime.now().strftime("%Y_%m_%d %H:%M:%S")})")
   pri = chunk.up_to_date_price(searchbar.text())
   amountspin.setRange(0, int(sim.cash/pri))
-  amountspin.setValue(amountspin.maximum())
   try:
     amountspin1.setRange(1, int(sim.stocks[text][ordertype.currentText().lower()+"s"]))
-    amountspin1.setValue(amountspin.maximum())
   except KeyError:
      amountspin1.setRange(0, 0)
   if pri != -1:
@@ -418,4 +436,5 @@ window.setLayout(main_layout)
 window.resize(400, 200)
 window.show()
 
+app.aboutToQuit.connect(save_files)
 app.exec()
