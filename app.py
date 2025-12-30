@@ -12,6 +12,18 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTime,QTimer
 from PySide6.QtWidgets import QMainWindow
 import json
+import os
+"""PS C:\Users\arvid> cd .\Desktop\
+PS C:\Users\arvid\Desktop> cd .\stockter\
+PS C:\Users\arvid\Desktop\stockter> .venv\Scripts\Activate
+(.venv) PS C:\Users\arvid\Desktop\stockter> pyinstaller --onefile --noconsole --name Stockter --add-data "images;images" app.py"""
+def resource_path(relative_path):
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class StockLink():
   def __init__(self,stockname="NVDA",linkname="NVDA chart"):
@@ -88,7 +100,7 @@ QLabel {
 #window:
 window = pysdw.QWidget() 
 window.setWindowTitle("stockDuck")
-window.setWindowIcon(QPixmap("images/icon.webp"))
+window.setWindowIcon(QPixmap(resource_path("images/icon.webp")))
 
 #stacks:
 stack = pysdw.QStackedWidget()
@@ -146,7 +158,7 @@ informationlabelhomepage.setStyleSheet("color: #ffffff;")
 homelayout.addWidget(informationlabelhomepage)
 
 homebutton = pysdw.QPushButton()
-homebutton.setIcon(QPixmap("images/home_icon.png"))
+homebutton.setIcon(QPixmap(resource_path("images/home_icon.png")))
 homebutton.clicked.connect(lambda: stack.setCurrentWidget(homepage))
 homebutton.setFlat(True) 
 homebutton.setToolTip("Home")
@@ -201,7 +213,7 @@ searchresults.addWidget(pricelabel)
 resultlabel = StockLink("","").stocklink
 searchresults.addWidget(resultlabel,alignment=Qt.AlignLeft | Qt.AlignTop)
 loadingstock = pysdw.QLabel("")
-loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
+loadingstock.setPixmap(QPixmap(resource_path("images/finished_loading.png")).scaled(32,32))
 topbar.addWidget(loadingstock)
 stockbuyselllayout = pysdw.QHBoxLayout()
 stockbuysellwidgetplaceholder = pysdw.QWidget()
@@ -260,7 +272,7 @@ def on_curtextchanged():
 ordertype.currentTextChanged.connect(on_curtextchanged)
 
 def on_search_trading_layout0():
-  loadingstock.setPixmap(QPixmap("images/loading_icon.png").scaled(32,32))
+  loadingstock.setPixmap(QPixmap(resource_path("images/loading_icon.png")).scaled(32,32))
   QApplication.processEvents()
   text = searchbar.text().strip()
   if not text:
@@ -282,7 +294,7 @@ def on_search_trading_layout0():
     pricelabel.setText("Stock/Symbol could not be found")
     stocknamelabel.setText("")
     resultlabel.setText("")
-  loadingstock.setPixmap(QPixmap("images/finished_loading.png").scaled(32,32))
+  loadingstock.setPixmap(QPixmap(resource_path("images/finished_loading.png")).scaled(32,32))
 searchbar.returnPressed.connect(on_search_trading_layout0)
 
 def on_sell():
@@ -300,7 +312,7 @@ stockupdatetimer.start(10000)
 
 #deletebutton
 deletbutton = pysdw.QPushButton()
-deletbutton.setIcon(QPixmap("images/delete_icon.png"))
+deletbutton.setIcon(QPixmap(resource_path("images/delete_icon.png")))
 deletbutton.setToolTip("Delete search-bar content")
 deletbutton.setStyleSheet("""
 QToolTip {
@@ -360,7 +372,7 @@ walletlayout.addStretch(0)
 
 #sidebar button
 tradingbutton = pysdw.QPushButton("")
-tradingbutton.setIcon(QPixmap("images/trading_icon.webp"))
+tradingbutton.setIcon(QPixmap(resource_path("images/trading_icon.webp")))
 tradingbutton.clicked.connect(lambda: stack.setCurrentWidget(tradingpage))
 tradingbutton.setFlat(True)
 tradingbutton.setToolTip("Trading page")
@@ -379,7 +391,7 @@ def on_walletpage():
   stack.setCurrentWidget(walletpage)
 
 walletbutton = pysdw.QPushButton("")
-walletbutton.setIcon(QPixmap("images/wallet_icon.png"))
+walletbutton.setIcon(QPixmap(resource_path("images/wallet_icon.png")))
 walletbutton.clicked.connect(on_walletpage)
 walletbutton.setFlat(True)
 walletbutton.setToolTip("Wallet page")
